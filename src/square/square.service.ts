@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { Client, Environment, Location } from 'square';
+import { Client, CreatePaymentRequest, Environment, Location } from "square";
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
-import { CustomerDto } from './square.model';
+import { CustomerDto, ProcessPaymentDto } from "./square.model";
 
 @Injectable()
 export class SquareService {
@@ -39,6 +39,38 @@ export class SquareService {
         id: result.customer.id,
         ...customer,
       };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  public async processPayment(paymentData: ProcessPaymentDto): Promise<any> {
+    const { paymentsApi, locationsApi } = this.squareClient;
+    const locationResponse = await locationsApi.retrieveLocation(
+      this.configService.get<string>('SQUARE_LOCATION_ID'),
+    );
+    const currency = locationResponse.result.location.currency;
+    const idempotencyKey = uuidv4();
+    const requestBody: CreatePaymentRequest = {
+      ...paymentData,
+      idempotencyKey: idempotencyKey.toString(),
+      amountMoney: {
+        ...paymentData.amountMoney,
+        currency,
+      },
+    };
+    try {
+      const {
+        result: { payment },
+      } = await paymentsApi.createPayment(requestBody);
+
+      return JSON.stringify(
+        payment,
+        (key, value) => {
+          return typeof value === 'bigint' ? parseInt(String(value)) : value;
+        },
+        4,
+      );
     } catch (error) {
       console.log(error);
     }
