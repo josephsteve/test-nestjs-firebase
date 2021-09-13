@@ -4,6 +4,7 @@ export class CustomerDto {
   id?: string;
   firstName: string;
   lastName: string;
+  address: BillingAddress;
 }
 
 export class BillingAddress {

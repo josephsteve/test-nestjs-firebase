@@ -32,6 +32,7 @@ export class SquareService {
       idempotencyKey: idempotencyKey.toString(),
       givenName: customer.firstName,
       familyName: customer.lastName,
+      address: customer.address,
     };
     try {
       const { result } = await customersApi.createCustomer(requestBody);

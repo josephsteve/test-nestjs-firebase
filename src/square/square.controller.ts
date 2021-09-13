@@ -21,6 +21,12 @@ export class SquareController {
     const custResp = await this.squareService.createCustomer({
       firstName: paymentForm.firstName,
       lastName: paymentForm.lastName,
+      address: {
+        addressLine1: paymentForm.street,
+        locality: paymentForm.city,
+        sublocality3: paymentForm.state,
+        postalCode: paymentForm.zip,
+      },
     });
     return await this.squareService.processPayment({
       customerId: custResp.id,
