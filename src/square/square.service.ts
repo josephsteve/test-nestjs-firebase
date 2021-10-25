@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { Client, CreatePaymentRequest, Environment, Location } from "square";
+import { Client, CreatePaymentRequest, Environment, Location } from 'square';
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
-import { CustomerDto, ProcessPaymentDto } from "./square.model";
+import { CustomerDto, ProcessPaymentDto } from './square.model';
 
 @Injectable()
 export class SquareService {
   constructor(private configService: ConfigService) {}
   private config = {
     environment: Environment.Sandbox,
-    accessToken: this.configService.get<string>('SQUARE_ACCESS_TOKEN'),
+    accessToken: this.configService.get<string>('SquareAccessToken'),
     timeout: 3000,
   };
   private squareClient = new Client(this.config);
@@ -48,7 +48,7 @@ export class SquareService {
   public async processPayment(paymentData: ProcessPaymentDto): Promise<any> {
     const { paymentsApi, locationsApi } = this.squareClient;
     const locationResponse = await locationsApi.retrieveLocation(
-      this.configService.get<string>('SQUARE_LOCATION_ID'),
+      this.configService.get<string>('SquareLocationId'),
     );
     const currency = locationResponse.result.location.currency;
     const idempotencyKey = uuidv4();

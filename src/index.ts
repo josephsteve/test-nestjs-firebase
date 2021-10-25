@@ -7,10 +7,7 @@ import * as functions from 'firebase-functions';
 const server = express();
 
 export const createNestServer = async (expressInstance) => {
-  const app = await NestFactory.create(
-    AppModule,
-    new ExpressAdapter(expressInstance),
-  );
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(expressInstance));
 
   return app.init();
 };
